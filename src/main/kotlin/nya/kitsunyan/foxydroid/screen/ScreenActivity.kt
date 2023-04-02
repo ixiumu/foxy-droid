@@ -64,9 +64,9 @@ abstract class ScreenActivity: FragmentActivity() {
       return supportFragmentManager.findFragmentById(R.id.main_content)
     }
 
-  override fun attachBaseContext(base: Context) {
-    super.attachBaseContext(Utils.configureLocale(base))
-  }
+//  override fun attachBaseContext(base: Context) {
+//    super.attachBaseContext(Utils.configureLocale(base))
+//  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     setTheme(Preferences[Preferences.Key.Theme].getResId(resources.configuration))

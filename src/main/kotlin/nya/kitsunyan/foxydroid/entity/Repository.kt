@@ -96,11 +96,17 @@ data class Repository(val id: Long, val address: String, val mirrors: List<Strin
 
     val defaultRepositories = listOf(run {
       defaultRepository("https://f-droid.org/repo", "F-Droid", "The official F-Droid Free Software repository. " +
-        "Everything in this repository is always built from the source code.",
-        21, true, "43238D512C1E5EB2D6569F4A3AFBF5523418B82E0A3ED1552770ABB9A9C9CCAB", "")
+              "Everything in this repository is always built from the source code.",
+        21, false, "43238D512C1E5EB2D6569F4A3AFBF5523418B82E0A3ED1552770ABB9A9C9CCAB", "")
     }, run {
       defaultRepository("https://f-droid.org/archive", "F-Droid Archive", "The archive of the official F-Droid Free " +
         "Software repository. Apps here are old and can contain known vulnerabilities and security issues!",
+        21, false, "43238D512C1E5EB2D6569F4A3AFBF5523418B82E0A3ED1552770ABB9A9C9CCAB", "")
+    }, run {
+      defaultRepository("https://cloudflare.f-droid.org/repo", "F-Droid CloudFlare CDN", "The Official CDN-delievered F-droid mirror. ",
+        21, true, "43238D512C1E5EB2D6569F4A3AFBF5523418B82E0A3ED1552770ABB9A9C9CCAB", "")
+    }, run {
+      defaultRepository("https://mirrors.nju.edu.cn/fdroid/repo", "F-Droid 南京大学镜像", "F-Droid 南京大学镜像站点",
         21, false, "43238D512C1E5EB2D6569F4A3AFBF5523418B82E0A3ED1552770ABB9A9C9CCAB", "")
     }, run {
       defaultRepository("https://guardianproject.info/fdroid/repo", "Guardian Project Official Releases", "The " +

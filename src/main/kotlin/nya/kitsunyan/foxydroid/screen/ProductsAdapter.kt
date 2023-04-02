@@ -78,7 +78,7 @@ class ProductsAdapter(private val onClick: (ProductItem) -> Unit):
         configuration.set(true, false, 0, 0)
       }
       else -> {
-        configuration.set(true, false, context.resources.sizeScaled(72), 0)
+        configuration.set(true, false, context.resources.sizeScaled(56), 0)
       }
     }
   }

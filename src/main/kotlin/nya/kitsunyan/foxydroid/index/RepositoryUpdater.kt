@@ -1,5 +1,6 @@
 package nya.kitsunyan.foxydroid.index
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import io.reactivex.rxjava3.core.Observable
@@ -24,6 +25,7 @@ import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import javax.xml.parsers.SAXParserFactory
 
+@SuppressLint("StaticFieldLeak")
 object RepositoryUpdater {
   enum class Stage {
     DOWNLOAD, PROCESS, MERGE, COMMIT

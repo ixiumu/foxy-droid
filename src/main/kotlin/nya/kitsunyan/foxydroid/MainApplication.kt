@@ -34,9 +34,9 @@ class MainApplication: Application() {
     return InstalledItem(packageName, versionName.orEmpty(), versionCodeCompat, signatureString)
   }
 
-  override fun attachBaseContext(base: Context) {
-    super.attachBaseContext(Utils.configureLocale(base))
-  }
+//  override fun attachBaseContext(base: Context) {
+//    super.attachBaseContext(Utils.configureLocale(base))
+//  }
 
   override fun onCreate() {
     super.onCreate()
