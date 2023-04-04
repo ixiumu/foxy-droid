@@ -163,5 +163,7 @@
   <string name="versions">版本</string>
   <string name="waiting_to_start_download">正在等待下载开始</string>
   <string name="website">网站</string>
+  <string name="root_installation">Root安装</string>
+  <string name="root_installation_summary">使用Root权限自动安装</string>
 
 </resources>

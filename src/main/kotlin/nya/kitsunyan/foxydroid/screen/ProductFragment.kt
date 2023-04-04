@@ -34,6 +34,7 @@ import nya.kitsunyan.foxydroid.service.Connection
 import nya.kitsunyan.foxydroid.service.DownloadService
 import nya.kitsunyan.foxydroid.utility.RxUtils
 import nya.kitsunyan.foxydroid.utility.Utils
+import nya.kitsunyan.foxydroid.utility.Utils.startPackageInstaller
 import nya.kitsunyan.foxydroid.utility.extension.android.*
 import nya.kitsunyan.foxydroid.widget.DividerItemDecoration
 
@@ -338,8 +339,8 @@ class ProductFragment(): ScreenFragment(), ProductAdapter.Callbacks {
         val release = if (compatibleReleases.size >= 2) {
           compatibleReleases
             .filter { it.platforms.contains(Android.primaryPlatform) }
-            .minBy { it.platforms.size }
-            ?: compatibleReleases.minBy { it.platforms.size }
+            .minByOrNull { it.platforms.size }
+            ?: compatibleReleases.minByOrNull { it.platforms.size }
             ?: compatibleReleases.firstOrNull()
         } else {
           compatibleReleases.firstOrNull()
