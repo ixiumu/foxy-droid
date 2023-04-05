@@ -1,7 +1,7 @@
 package nya.kitsunyan.foxydroid.index
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.Application
 import android.net.Uri
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -52,11 +52,11 @@ object RepositoryUpdater {
     }
   }
 
-  private lateinit var context: Context
+  private lateinit var context: Application
   private val updaterLock = Any()
   private val cleanupLock = Any()
 
-  fun init(context: Context) {
+  fun init(context: Application) {
     this.context = context
 
     var lastDisabled = setOf<Long>()
