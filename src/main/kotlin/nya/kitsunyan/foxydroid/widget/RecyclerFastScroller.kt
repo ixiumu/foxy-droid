@@ -30,7 +30,7 @@ class RecyclerFastScroller(private val recyclerView: RecyclerView) {
 
   private var scrolling = false
   private var fastScrolling: FastScrolling? = null
-  private var display = Pair(0L, false)
+  private var display = 0L to false
 
   private val invalidateTransition = Runnable(recyclerView::invalidate)
 
@@ -59,7 +59,7 @@ class RecyclerFastScroller(private val recyclerView: RecyclerView) {
         }
         time
       }
-      display = Pair(start, newDisplay)
+      display = start to newDisplay
       recyclerView.invalidate()
     }
   }

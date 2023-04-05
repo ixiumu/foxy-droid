@@ -100,7 +100,7 @@ class ProductsFragment(): ScreenFragment(), CursorOwner.Callback {
       .concatWith(Database.observable(Database.Subject.Repositories))
       .observeOn(Schedulers.io())
       .flatMapSingle { RxUtils.querySingle { Database.RepositoryAdapter.getAll(it) } }
-      .map { it.asSequence().map { Pair(it.id, it) }.toMap() }
+      .map { it.asSequence().map { it.id to it }.toMap() }
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe { (recyclerView?.adapter as? ProductsAdapter)?.repositories = it }
   }

@@ -171,10 +171,10 @@ class EditRepositoryFragment(): ScreenFragment() {
           val uri = Uri.parse(URL(text).toString())
           val fingerprintText = uri.getQueryParameter("fingerprint")?.nullIfEmpty()
             ?: uri.getQueryParameter("FINGERPRINT")?.nullIfEmpty()
-          Pair(uri.buildUpon().path(uri.path?.pathCropped)
-            .query(null).fragment(null).build().toString(), fingerprintText)
+          uri.buildUpon().path(uri.path?.pathCropped)
+            .query(null).fragment(null).build().toString() to fingerprintText
         } catch (e: Exception) {
-          Pair(null, null)
+          null to null
         }
         layout.address.setText(addressText?.nullIfEmpty() ?: layout.address.hint)
         layout.fingerprint.setText(fingerprintText)
@@ -201,9 +201,9 @@ class EditRepositoryFragment(): ScreenFragment() {
           }
           ?.let {
             val index = it.indexOf(':')
-            if (index >= 0) Pair(it.substring(0, index), it.substring(index + 1)) else null
+            if (index >= 0) it.substring(0, index) to it.substring(index + 1) else null
           }
-          ?: Pair(null, null)
+          ?: null to null
         layout.username.setText(usernameText)
         layout.password.setText(passwordText)
       }

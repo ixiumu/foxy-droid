@@ -277,7 +277,7 @@ class ProductAdapter(private val callbacks: Callbacks, private val columns: Int)
     }
 
     fun invalidate(resources: Resources, callback: () -> T): T {
-      val (density, scaledDensity) = resources.displayMetrics.let { Pair(it.density, it.scaledDensity) }
+      val (density, scaledDensity) = resources.displayMetrics.let { it.density to it.scaledDensity }
       if (this.density != density || this.scaledDensity != scaledDensity) {
         this.density = density
         this.scaledDensity = scaledDensity
@@ -730,7 +730,7 @@ class ProductAdapter(private val callbacks: Callbacks, private val columns: Int)
             } catch (e: Exception) {
               null
             }
-            Pair(permissionGroupInfo, permissionInfo)
+            permissionGroupInfo to permissionInfo
           }
           .groupBy({ it.first }, { it.second })
         if (permissions.isNotEmpty()) {
@@ -765,11 +765,11 @@ class ProductAdapter(private val callbacks: Callbacks, private val columns: Int)
     val compatibleReleasePairs = products.asSequence()
       .flatMap { (product, repository) -> product.releases.asSequence()
         .filter { incompatible || it.incompatibilities.isEmpty() }
-        .map { Pair(it, repository) } }
+        .map { it to repository } }
       .toList()
     val signaturesForVersionCode = compatibleReleasePairs.asSequence()
       .mapNotNull { (release, _) -> if (release.signature.isEmpty()) null else
-        Pair(release.versionCode, release.signature) }
+        release.versionCode to release.signature }
       .distinct().groupBy { it.first }.toMap()
     val releaseItems = compatibleReleasePairs.asSequence()
       .map { (release, repository) -> Item.ReleaseItem(repository, release,
@@ -1023,12 +1023,12 @@ class ProductAdapter(private val callbacks: Callbacks, private val columns: Int)
         val (checked, enabled) = when (item.switchType) {
           SwitchType.IGNORE_ALL_UPDATES -> {
             val productPreference = ProductPreferences[item.packageName]
-            Pair(productPreference.ignoreUpdates, true)
+            productPreference.ignoreUpdates to true
           }
           SwitchType.IGNORE_THIS_UPDATE -> {
             val productPreference = ProductPreferences[item.packageName]
-            Pair(productPreference.ignoreUpdates || productPreference.ignoreVersionCode == item.versionCode,
-              !productPreference.ignoreUpdates)
+            (productPreference.ignoreUpdates || productPreference.ignoreVersionCode == item.versionCode) to
+              !productPreference.ignoreUpdates
           }
         }
         holder.enabled.isChecked = checked
@@ -1104,9 +1104,9 @@ class ProductAdapter(private val callbacks: Callbacks, private val columns: Int)
             }
           }
           if (label == null) {
-            Pair(false, permission.name)
+            false to permission.name
           } else {
-            Pair(true, label.first().toUpperCase() + label.substring(1, label.length))
+            true to label.first().toUpperCase() + label.substring(1, label.length)
           }
         }
         val builder = SpannableStringBuilder()
@@ -1234,7 +1234,7 @@ class ProductAdapter(private val callbacks: Callbacks, private val columns: Int)
       builder.setSpan(LinkSpan(span.url, this), start, end, flags)
     }
     val bulletSpans = builder.getSpans(0, builder.length, BulletSpan::class.java).orEmpty()
-      .asSequence().map { Pair(it, builder.getSpanStart(it)) }.sortedByDescending { it.second }
+      .asSequence().map { it to builder.getSpanStart(it) }.sortedByDescending { it.second }
     for (spanPair in bulletSpans) {
       val (span, start) = spanPair
       builder.removeSpan(span)

@@ -1,5 +1,6 @@
 package nya.kitsunyan.foxydroid.content
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -15,15 +16,16 @@ object ProductPreferences {
   private lateinit var preferences: SharedPreferences
   private val subject = PublishSubject.create<Pair<String, Long?>>()
 
+  @SuppressLint("CheckResult")
   fun init(context: Context) {
     preferences = context.getSharedPreferences("product_preferences", Context.MODE_PRIVATE)
     Database.LockAdapter.putAll(preferences.all.keys
-      .mapNotNull { packageName -> this[packageName].databaseVersionCode?.let { Pair(packageName, it) } })
+      .mapNotNull { packageName -> this[packageName].databaseVersionCode?.let { packageName to it } })
     subject
       .observeOn(Schedulers.io())
       .subscribe { (packageName, versionCode) ->
         if (versionCode != null) {
-          Database.LockAdapter.put(Pair(packageName, versionCode))
+          Database.LockAdapter.put(packageName to versionCode)
         } else {
           Database.LockAdapter.delete(packageName)
         }
@@ -58,7 +60,7 @@ object ProductPreferences {
       .toByteArray().toString(Charset.defaultCharset())).apply()
     if (oldProductPreference.ignoreUpdates != productPreference.ignoreUpdates ||
       oldProductPreference.ignoreVersionCode != productPreference.ignoreVersionCode) {
-      subject.onNext(Pair(packageName, productPreference.databaseVersionCode))
+      subject.onNext(packageName to productPreference.databaseVersionCode)
     }
   }
 }

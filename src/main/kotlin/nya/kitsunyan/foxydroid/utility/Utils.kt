@@ -44,7 +44,7 @@ object Utils {
   fun getDefaultApplicationIcons(context: Context): Pair<Drawable, Drawable> {
     val progressIcon: Drawable = createDefaultApplicationIcon(context, android.R.attr.textColorSecondary)
     val defaultIcon: Drawable = createDefaultApplicationIcon(context, android.R.attr.colorAccent)
-    return Pair(progressIcon, defaultIcon)
+    return progressIcon to defaultIcon
   }
 
   fun getToolbarIcon(context: Context, resId: Int): Drawable {

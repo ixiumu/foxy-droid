@@ -1,5 +1,6 @@
 package nya.kitsunyan.foxydroid.database
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -49,8 +50,8 @@ object Database {
     }
 
     val createIndexPairFormatted: Pair<String, String>?
-      get() = createIndex?.let { Pair("CREATE INDEX ${innerName}_index ON $innerName ($it)",
-        "CREATE INDEX ${name}_index ON $innerName ($it)") }
+      get() = createIndex?.let { "CREATE INDEX ${innerName}_index ON $innerName ($it)" to
+        "CREATE INDEX ${name}_index ON $innerName ($it)" }
   }
 
   private object Schema {
@@ -184,7 +185,7 @@ object Database {
   private fun handleTables(db: SQLiteDatabase, recreate: Boolean, vararg tables: Table): Boolean {
     val shouldRecreate = recreate || tables.any {
       val sql = db.query("${it.databasePrefix}sqlite_master", columns = arrayOf("sql"),
-        selection = Pair("type = ? AND name = ?", arrayOf("table", it.innerName)))
+        selection = "type = ? AND name = ?" to arrayOf("table", it.innerName))
         .use { it.firstOrNull()?.getString(0) }.orEmpty()
       it.formatCreateTable(it.innerName) != sql
     }
@@ -204,8 +205,8 @@ object Database {
   private fun handleIndexes(db: SQLiteDatabase, vararg tables: Table) {
     val shouldVacuum = tables.map {
       val sqls = db.query("${it.databasePrefix}sqlite_master", columns = arrayOf("name", "sql"),
-        selection = Pair("type = ? AND tbl_name = ?", arrayOf("index", it.innerName)))
-        .use { it.asSequence().mapNotNull { it.getString(1)?.let { sql -> Pair(it.getString(0), sql) } }.toList() }
+        selection = "type = ? AND tbl_name = ?" to arrayOf("index", it.innerName))
+        .use { it.asSequence().mapNotNull { it.getString(1)?.let { sql -> it.getString(0) to sql } }.toList() }
         .filter { !it.first.startsWith("sqlite_") }
       val createIndexes = it.createIndexPairFormatted?.let { listOf(it) }.orEmpty()
       createIndexes.map { it.first } != sqls.map { it.second } && run {
@@ -225,7 +226,7 @@ object Database {
 
   private fun dropOldTables(db: SQLiteDatabase, vararg neededTables: Table) {
     val tables = db.query("sqlite_master", columns = arrayOf("name"),
-      selection = Pair("type = ?", arrayOf("table")))
+      selection = "type = ?" to arrayOf("table"))
       .use { it.asSequence().mapNotNull { it.getString(0) }.toList() }
       .filter { !it.startsWith("sqlite_") && !it.startsWith("android_") }
       .toSet() - neededTables.mapNotNull { if (it.memory) null else it.name }
@@ -323,21 +324,22 @@ object Database {
 
     fun get(id: Long): Repository? {
       return db.query(Schema.Repository.name,
-        selection = Pair("${Schema.Repository.ROW_ID} = ? AND ${Schema.Repository.ROW_DELETED} == 0",
-          arrayOf(id.toString())))
+        selection = "${Schema.Repository.ROW_ID} = ? AND ${Schema.Repository.ROW_DELETED} == 0" to
+          arrayOf(id.toString()))
         .use { it.firstOrNull()?.let(::transform) }
     }
 
     fun getAll(signal: CancellationSignal?): List<Repository> {
       return db.query(Schema.Repository.name,
-        selection = Pair("${Schema.Repository.ROW_DELETED} == 0", emptyArray()),
+        selection = "${Schema.Repository.ROW_DELETED} == 0" to emptyArray(),
         signal = signal).use { it.asSequence().map(::transform).toList() }
     }
 
+    @SuppressLint("Range")
     fun getAllDisabledDeleted(signal: CancellationSignal?): Set<Pair<Long, Boolean>> {
       return db.query(Schema.Repository.name,
         columns = arrayOf(Schema.Repository.ROW_ID, Schema.Repository.ROW_DELETED),
-        selection = Pair("${Schema.Repository.ROW_ENABLED} == 0 OR ${Schema.Repository.ROW_DELETED} != 0", emptyArray()),
+        selection = "${Schema.Repository.ROW_ENABLED} == 0 OR ${Schema.Repository.ROW_DELETED} != 0" to emptyArray(),
         signal = signal).use { it.asSequence().map { Pair(it.getLong(it.getColumnIndex(Schema.Repository.ROW_ID)),
         it.getInt(it.getColumnIndex(Schema.Repository.ROW_DELETED)) != 0) }.toSet() }
     }
@@ -370,10 +372,11 @@ object Database {
 
     fun query(signal: CancellationSignal?): Cursor {
       return db.query(Schema.Repository.name,
-        selection = Pair("${Schema.Repository.ROW_DELETED} == 0", emptyArray()),
+        selection = "${Schema.Repository.ROW_DELETED} == 0" to emptyArray(),
         signal = signal).observable(Subject.Repositories)
     }
 
+    @SuppressLint("Range")
     fun transform(cursor: Cursor): Repository {
       return cursor.getBlob(cursor.getColumnIndex(Schema.Repository.ROW_DATA))
         .jsonParse { Repository.deserialize(cursor.getLong(cursor.getColumnIndex(Schema.Repository.ROW_ID)), it) }
@@ -384,13 +387,13 @@ object Database {
     fun get(packageName: String, signal: CancellationSignal?): List<Product> {
       return db.query(Schema.Product.name,
         columns = arrayOf(Schema.Product.ROW_REPOSITORY_ID, Schema.Product.ROW_DESCRIPTION, Schema.Product.ROW_DATA),
-        selection = Pair("${Schema.Product.ROW_PACKAGE_NAME} = ?", arrayOf(packageName)),
+        selection = "${Schema.Product.ROW_PACKAGE_NAME} = ?" to arrayOf(packageName),
         signal = signal).use { it.asSequence().map(::transform).toList() }
     }
 
     fun getCount(repositoryId: Long): Int {
       return db.query(Schema.Product.name, columns = arrayOf("COUNT (*)"),
-        selection = Pair("${Schema.Product.ROW_REPOSITORY_ID} = ?", arrayOf(repositoryId.toString())))
+        selection = "${Schema.Product.ROW_REPOSITORY_ID} = ?" to arrayOf(repositoryId.toString()))
         .use { it.firstOrNull()?.getInt(0) ?: 0 }
     }
 
@@ -470,12 +473,14 @@ object Database {
       return builder.query(db, signal).observable(Subject.Products)
     }
 
+    @SuppressLint("Range")
     private fun transform(cursor: Cursor): Product {
       return cursor.getBlob(cursor.getColumnIndex(Schema.Product.ROW_DATA))
         .jsonParse { Product.deserialize(cursor.getLong(cursor.getColumnIndex(Schema.Product.ROW_REPOSITORY_ID)),
           cursor.getString(cursor.getColumnIndex(Schema.Product.ROW_DESCRIPTION)), it) }
     }
 
+    @SuppressLint("Range")
     fun transformItem(cursor: Cursor): ProductItem {
       return cursor.getBlob(cursor.getColumnIndex(Schema.Product.ROW_DATA_ITEM))
         .jsonParse { ProductItem.deserialize(cursor.getLong(cursor.getColumnIndex(Schema.Product.ROW_REPOSITORY_ID)),
@@ -489,6 +494,7 @@ object Database {
     }
   }
 
+  @SuppressLint("Range")
   object CategoryAdapter {
     fun getAll(signal: CancellationSignal?): Set<String> {
       val builder = QueryBuilder()
@@ -510,7 +516,7 @@ object Database {
       return db.query(Schema.Installed.name,
         columns = arrayOf(Schema.Installed.ROW_PACKAGE_NAME, Schema.Installed.ROW_VERSION,
           Schema.Installed.ROW_VERSION_CODE, Schema.Installed.ROW_SIGNATURE),
-        selection = Pair("${Schema.Installed.ROW_PACKAGE_NAME} = ?", arrayOf(packageName)),
+        selection = "${Schema.Installed.ROW_PACKAGE_NAME} = ?" to arrayOf(packageName),
         signal = signal).use { it.firstOrNull()?.let(::transform) }
     }
 
@@ -546,6 +552,7 @@ object Database {
       }
     }
 
+    @SuppressLint("Range")
     private fun transform(cursor: Cursor): InstalledItem {
       return InstalledItem(cursor.getString(cursor.getColumnIndex(Schema.Installed.ROW_PACKAGE_NAME)),
         cursor.getString(cursor.getColumnIndex(Schema.Installed.ROW_VERSION)),

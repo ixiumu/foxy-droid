@@ -16,7 +16,7 @@ object Preferences {
   private val subject = PublishSubject.create<Key<*>>()
 
   private val keys = sequenceOf(Key.AutoSync, Key.IncompatibleVersions, Key.RootInstallation, Key.ProxyHost, Key.ProxyPort, Key.ProxyType,
-    Key.SortOrder, Key.Theme, Key.UpdateNotify, Key.UpdateUnstable).map { Pair(it.name, it) }.toMap()
+    Key.SortOrder, Key.Theme, Key.UpdateNotify, Key.UpdateUnstable).map { it.name to it }.toMap()
 
   fun init(context: Context) {
     preferences = context.getSharedPreferences("${context.packageName}_preferences", Context.MODE_PRIVATE)

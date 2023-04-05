@@ -55,7 +55,7 @@ fun Context.getDrawableCompat(resId: Int): Drawable {
 fun Context.getColorFromAttr(attrResId: Int): ColorStateList {
   val typedArray = obtainStyledAttributes(intArrayOf(attrResId))
   val (colorStateList, resId) = try {
-    Pair(typedArray.getColorStateList(0), typedArray.getResourceId(0, 0))
+    typedArray.getColorStateList(0) to typedArray.getResourceId(0, 0)
   } finally {
     typedArray.recycle()
   }

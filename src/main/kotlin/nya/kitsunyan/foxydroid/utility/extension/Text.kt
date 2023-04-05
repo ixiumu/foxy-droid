@@ -11,8 +11,8 @@ fun <T: CharSequence> T.nullIfEmpty(): T? {
 private val sizeFormats = listOf("%.0f B", "%.0f kB", "%.1f MB", "%.2f GB")
 
 fun Long.formatSize(): String {
-  val (size, index) = generateSequence(Pair(this.toFloat(), 0)) { (size, index) -> if (size >= 1000f)
-    Pair(size / 1000f, index + 1) else null }.take(sizeFormats.size).last()
+  val (size, index) = generateSequence(this.toFloat() to 0) { (size, index) -> if (size >= 1000f)
+    size / 1000f to index + 1 else null }.take(sizeFormats.size).last()
   return sizeFormats[index].format(Locale.US, size)
 }
 

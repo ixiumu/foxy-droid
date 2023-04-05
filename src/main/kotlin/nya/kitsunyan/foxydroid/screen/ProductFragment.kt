@@ -70,7 +70,7 @@ class ProductFragment(): ScreenFragment(), ProductAdapter.Callbacks {
 
   private var layoutManagerState: LinearLayoutManager.SavedState? = null
 
-  private var actions = Pair(emptySet<Action>(), null as Action?)
+  private var actions = emptySet<Action>() to null as Action?
   private var products = emptyList<Pair<Product, Repository>>()
   private var installed: Installed? = null
   private var downloading = false
@@ -143,11 +143,11 @@ class ProductFragment(): ScreenFragment(), ProductAdapter.Callbacks {
       .flatMapSingle { RxUtils.querySingle { Database.ProductAdapter.get(packageName, it) } }
       .flatMapSingle { products -> RxUtils
         .querySingle { Database.RepositoryAdapter.getAll(it) }
-        .map { it.asSequence().map { Pair(it.id, it) }.toMap()
-          .let { products.mapNotNull { product -> it[product.repositoryId]?.let { Pair(product, it) } } } } }
+        .map { it.asSequence().map { it.id to it }.toMap()
+          .let { products.mapNotNull { product -> it[product.repositoryId]?.let { product to it } } } } }
       .flatMapSingle { products -> RxUtils
         .querySingle { Nullable(Database.InstalledAdapter.get(packageName, it)) }
-        .map { Pair(products, it) } }
+        .map { products to it } }
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe {
         val (products, installedItem) = it
@@ -184,7 +184,7 @@ class ProductFragment(): ScreenFragment(), ProductAdapter.Callbacks {
                       e.printStackTrace()
                       null
                     }
-                    label?.let { Pair(activityInfo.name, it) }
+                    label?.let { activityInfo.name to it }
                   }
                   .toList()
               }
@@ -273,7 +273,7 @@ class ProductFragment(): ScreenFragment(), ProductAdapter.Callbacks {
         toolbar.menu.findItem(action.id).isEnabled = !downloading
       }
     }
-    this.actions = Pair(actions, primaryAction)
+    this.actions = actions to primaryAction
     updateToolbarButtons()
   }
 

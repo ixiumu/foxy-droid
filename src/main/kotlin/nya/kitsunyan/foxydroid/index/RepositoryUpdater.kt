@@ -70,8 +70,8 @@ object RepositoryUpdater {
         lastDisabled = newDisabled
         val deleted = it.asSequence().filter { it.second }.map { it.first }.toSet()
         if (disabled.isNotEmpty() || deleted.isNotEmpty()) {
-          val pairs = (disabled.asSequence().map { Pair(it, false) } +
-            deleted.asSequence().map { Pair(it, true) }).toSet()
+          val pairs = (disabled.asSequence().map { it to false } +
+            deleted.asSequence().map { it to true }).toSet()
           synchronized(cleanupLock) { Database.RepositoryAdapter.cleanup(pairs) }
         }
       }
@@ -121,7 +121,7 @@ object RepositoryUpdater {
           .appendPath(indexType.jarName).build().toString(), file, repository.lastModified, repository.entityTag,
           repository.authentication) { read, total -> callback(Stage.DOWNLOAD, read, total) }
         .subscribeOn(Schedulers.io())
-        .map { Pair(it, file) }
+        .map { it to file }
         .onErrorResumeNext {
           file.delete()
           when (it) {
@@ -183,7 +183,7 @@ object RepositoryUpdater {
               Database.UpdaterAdapter.putTemporary(products)
               products.clear()
             }
-            Pair(changedRepository, certificateFromIndex)
+            changedRepository to certificateFromIndex
           }
           IndexType.INDEX_V1 -> {
             var changedRepository: Repository? = null
@@ -216,7 +216,7 @@ object RepositoryUpdater {
                       if (Thread.interrupted()) {
                         throw InterruptedException()
                       }
-                      unmergedReleases += Pair(packageName, releases)
+                      unmergedReleases += packageName to releases
                       if (unmergedReleases.size >= 50) {
                         indexMerger.addReleases(unmergedReleases)
                         unmergedReleases.clear()
@@ -250,7 +250,7 @@ object RepositoryUpdater {
             } finally {
               mergerFile.delete()
             }
-            Pair(changedRepository, null)
+            changedRepository to null
           }
         }
 
@@ -329,7 +329,7 @@ object RepositoryUpdater {
         incompatibilities += Release.Incompatibility.Platform
       }
       incompatibilities += (it.features - features).sorted().map { Release.Incompatibility.Feature(it) }
-      Pair(it, incompatibilities as List<Release.Incompatibility>)
+      it to incompatibilities as List<Release.Incompatibility>
     }.toMutableList()
 
     val predicate: (Release) -> Boolean = { unstable || product.suggestedVersionCode <= 0 ||

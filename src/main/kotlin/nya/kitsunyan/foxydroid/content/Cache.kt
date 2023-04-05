@@ -72,7 +72,7 @@ object Cache {
   }
 
   fun cleanup(context: Context) {
-    thread { cleanup(context, Pair("images", 0), Pair("partial", 24), Pair("releases", 24), Pair("temporary", 1)) }
+    thread { cleanup(context, "images" to 0, "partial" to 24, "releases" to 24, "temporary" to 1) }
   }
 
   private fun cleanup(context: Context, vararg dirHours: Pair<String, Int>) {
@@ -131,7 +131,7 @@ object Cache {
 
     private fun getFileAndTypeForUri(uri: Uri): Pair<File, String> {
       return when (uri.pathSegments?.firstOrNull()) {
-        "releases" -> Pair(File(context!!.cacheDir, uri.encodedPath!!), "application/vnd.android.package-archive")
+        "releases" -> File(context!!.cacheDir, uri.encodedPath!!) to "application/vnd.android.package-archive"
         else -> throw SecurityException()
       }
     }
@@ -143,8 +143,8 @@ object Cache {
       val file = getFileAndTypeForUri(uri).first
       val columns = (projection ?: defaultColumns).mapNotNull {
         when (it) {
-          OpenableColumns.DISPLAY_NAME -> Pair(it, file.name)
-          OpenableColumns.SIZE -> Pair(it, file.length())
+          OpenableColumns.DISPLAY_NAME -> it to file.name
+          OpenableColumns.SIZE -> it to file.length()
           else -> null
         }
       }.unzip()

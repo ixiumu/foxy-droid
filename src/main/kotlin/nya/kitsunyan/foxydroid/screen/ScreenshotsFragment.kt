@@ -106,7 +106,7 @@ class ScreenshotsFragment(): DialogFragment() {
     viewPager.adapter = Adapter(packageName) { handleClick() }
     viewPager.setPageTransformer(MarginPageTransformer(resources.sizeScaled(16)))
     viewPager.viewTreeObserver.addOnGlobalLayoutListener {
-      (viewPager.adapter as Adapter).size = Pair(viewPager.width, viewPager.height)
+      (viewPager.adapter as Adapter).size = viewPager.width to viewPager.height
     }
     dialog.addContentView(viewPager, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
       ViewGroup.LayoutParams.MATCH_PARENT))
@@ -117,7 +117,7 @@ class ScreenshotsFragment(): DialogFragment() {
       .concatWith(Database.observable(Database.Subject.Products))
       .observeOn(Schedulers.io())
       .flatMapSingle { RxUtils.querySingle { Database.ProductAdapter.get(packageName, it) } }
-      .map { Pair(it.find { it.repositoryId == repositoryId }, Database.RepositoryAdapter.get(repositoryId)) }
+      .map { it.find { it.repositoryId == repositoryId } to Database.RepositoryAdapter.get(repositoryId) }
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe {
         val (product, repository) = it
@@ -188,7 +188,7 @@ class ScreenshotsFragment(): DialogFragment() {
       notifyDataSetChanged()
     }
 
-    var size = Pair(0, 0)
+    var size = 0 to 0
       set(value) {
         if (field != value) {
           field = value

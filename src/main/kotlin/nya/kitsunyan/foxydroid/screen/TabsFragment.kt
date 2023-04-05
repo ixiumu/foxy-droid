@@ -162,7 +162,7 @@ class TabsFragment: ScreenFragment() {
                 true
               } }
           menu.setGroupCheckable(0, true, true)
-          Pair(menu.item, items)
+          menu.item to items
         }
 
       syncRepositoriesMenuItem = add(0, 0, 0, R.string.sync_repositories)
