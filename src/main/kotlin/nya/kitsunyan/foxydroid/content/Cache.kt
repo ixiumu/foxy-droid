@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.OpenableColumns
 import android.system.Os
+import nya.kitsunyan.foxydroid.utility.Utils.getPackageInfo
 import nya.kitsunyan.foxydroid.utility.extension.android.*
 import java.io.File
 import java.util.UUID
@@ -60,7 +61,7 @@ object Cache {
 
   fun getReleaseUri(context: Context, cacheFileName: String): Uri {
     val file = getReleaseFile(context, cacheFileName)
-    val packageInfo = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PROVIDERS)
+    val packageInfo = context.getPackageInfo(PackageManager.GET_PROVIDERS)
     val authority = packageInfo.providers.find { it.name == Provider::class.java.name }!!.authority
     return Uri.Builder().scheme("content").authority(authority)
       .encodedPath(subPath(context.cacheDir, file)).build()
