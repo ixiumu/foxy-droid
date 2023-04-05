@@ -84,10 +84,10 @@ android {
     keystoreProperties.load(keystorePropertiesFile.newDataInputStream())
 
     def signing = [
-      storeFile: keystoreProperties['store.file'],
-      storePassword: keystoreProperties['store.password'],
-      keyAlias: keystoreProperties['key.alias'],
-      keyPassword: keystoreProperties['key.password']
+        storeFile: keystoreProperties['storeFile'],
+        storePassword: keystoreProperties['storePassword'],
+        keyAlias: keystoreProperties['keyAlias'],
+        keyPassword: keystoreProperties['keyPassword']
     ]
 
     if (!signing.any { _, v -> v == null }) {
