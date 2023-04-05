@@ -22,8 +22,8 @@ android {
   compileSdkVersion 33
 
   defaultConfig {
-    archivesBaseName = 'foxy-droid'
-    applicationId 'nya.kitsunyan.foxydroid'
+    archivesBaseName = 'iDroid'
+    applicationId 'com.idroid'
     minSdkVersion 21
     targetSdkVersion 33
     versionCode 4
