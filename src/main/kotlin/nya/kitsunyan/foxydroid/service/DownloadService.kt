@@ -331,6 +331,14 @@ class DownloadService: ConnectionService<DownloadService.Binder>() {
           started = true
           startSelf()
         }
+
+        if (Cache.getReleaseFile(this, task.release.cacheFileName).exists()) {
+          currentTask = null
+          publishSuccess(task)
+          handleDownload()
+          return
+        }
+
         val initialState = State.Connecting(task.packageName, task.name)
         stateNotificationBuilder.setWhen(System.currentTimeMillis())
         publishForegroundState(true, initialState)

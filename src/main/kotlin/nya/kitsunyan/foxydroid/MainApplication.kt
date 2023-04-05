@@ -85,6 +85,7 @@ class MainApplication: Application() {
     Database.InstalledAdapter.putAll(installedItems)
   }
 
+  @SuppressLint("CheckResult")
   private fun listenPreferences() {
     updateProxy()
     var lastAutoSync = Preferences[Preferences.Key.AutoSync]
