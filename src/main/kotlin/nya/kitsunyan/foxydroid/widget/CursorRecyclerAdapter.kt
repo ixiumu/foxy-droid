@@ -1,5 +1,6 @@
 package nya.kitsunyan.foxydroid.widget
 
+import android.annotation.SuppressLint
 import android.database.Cursor
 import androidx.recyclerview.widget.RecyclerView
 
@@ -11,6 +12,7 @@ abstract class CursorRecyclerAdapter<VT: Enum<VT>, VH: RecyclerView.ViewHolder>:
   private var rowIdIndex = 0
 
   var cursor: Cursor? = null
+    @SuppressLint("NotifyDataSetChanged")
     set(value) {
       if (field != value) {
         field?.close()

@@ -1,5 +1,6 @@
 package nya.kitsunyan.foxydroid.service
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -184,6 +185,7 @@ class DownloadService: ConnectionService<DownloadService.Binder>() {
     class Validation(val validateError: ValidationError): ErrorType()
   }
 
+  @SuppressLint("LaunchActivityFromNotification", "UnspecifiedImmutableFlag")
   private fun showNotificationError(task: Task, errorType: ErrorType) {
     notificationManager.notify(task.notificationTag, Common.NOTIFICATION_ID_DOWNLOADING, NotificationCompat
       .Builder(this, Common.NOTIFICATION_CHANNEL_DOWNLOADING)
@@ -192,7 +194,7 @@ class DownloadService: ConnectionService<DownloadService.Binder>() {
       .setColor(ContextThemeWrapper(this, R.style.Theme_Main_Light)
         .getColorFromAttr(android.R.attr.colorAccent).defaultColor)
       .setContentIntent(PendingIntent.getBroadcast(this, 0, Intent(this, Receiver::class.java)
-        .setAction("$ACTION_OPEN.${task.packageName}"), PendingIntent.FLAG_UPDATE_CURRENT))
+        .setAction("$ACTION_OPEN.${task.packageName}"), Utils.getPendingIntentFlag()))
       .apply {
         when (errorType) {
           is ErrorType.Network -> {
@@ -218,6 +220,7 @@ class DownloadService: ConnectionService<DownloadService.Binder>() {
       .build())
   }
 
+  @SuppressLint("LaunchActivityFromNotification")
   private fun showNotificationInstall(task: Task) {
     notificationManager.notify(task.notificationTag, Common.NOTIFICATION_ID_DOWNLOADING, NotificationCompat
       .Builder(this, Common.NOTIFICATION_CHANNEL_DOWNLOADING)
@@ -227,7 +230,7 @@ class DownloadService: ConnectionService<DownloadService.Binder>() {
         .getColorFromAttr(android.R.attr.colorAccent).defaultColor)
       .setContentIntent(PendingIntent.getBroadcast(this, 0, Intent(this, Receiver::class.java)
         .setAction("$ACTION_INSTALL.${task.packageName}")
-        .putExtra(EXTRA_CACHE_FILE_NAME, task.release.cacheFileName), PendingIntent.FLAG_UPDATE_CURRENT))
+        .putExtra(EXTRA_CACHE_FILE_NAME, task.release.cacheFileName), Utils.getPendingIntentFlag()))
       .setContentTitle(getString(R.string.downloaded_FORMAT, task.name))
       .setContentText(getString(R.string.tap_to_install_DESC))
       .build())
@@ -239,7 +242,7 @@ class DownloadService: ConnectionService<DownloadService.Binder>() {
     if (consumed || (Preferences[Preferences.Key.RootInstallation] && Shell.getShell().isRoot))
       PendingIntent.getBroadcast(this, 0, Intent(this, Receiver::class.java)
         .setAction("$ACTION_INSTALL.${task.packageName}")
-        .putExtra(EXTRA_CACHE_FILE_NAME, task.release.cacheFileName), PendingIntent.FLAG_UPDATE_CURRENT)
+        .putExtra(EXTRA_CACHE_FILE_NAME, task.release.cacheFileName), Utils.getPendingIntentFlag())
         .send()
     else showNotificationInstall(task)
   }
@@ -292,7 +295,7 @@ class DownloadService: ConnectionService<DownloadService.Binder>() {
     .setColor(ContextThemeWrapper(this, R.style.Theme_Main_Light)
       .getColorFromAttr(android.R.attr.colorAccent).defaultColor)
     .addAction(0, getString(R.string.cancel), PendingIntent.getService(this, 0,
-      Intent(this, this::class.java).setAction(ACTION_CANCEL), PendingIntent.FLAG_UPDATE_CURRENT)) }
+      Intent(this, this::class.java).setAction(ACTION_CANCEL), Utils.getPendingIntentFlag())) }
 
   private fun publishForegroundState(force: Boolean, state: State) {
     if (force || currentTask != null) {

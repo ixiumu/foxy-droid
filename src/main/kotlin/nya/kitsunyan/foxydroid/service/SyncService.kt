@@ -1,5 +1,6 @@
 package nya.kitsunyan.foxydroid.service
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -27,6 +28,7 @@ import nya.kitsunyan.foxydroid.entity.ProductItem
 import nya.kitsunyan.foxydroid.entity.Repository
 import nya.kitsunyan.foxydroid.index.RepositoryUpdater
 import nya.kitsunyan.foxydroid.utility.RxUtils
+import nya.kitsunyan.foxydroid.utility.Utils
 import nya.kitsunyan.foxydroid.utility.extension.android.*
 import nya.kitsunyan.foxydroid.utility.extension.resources.*
 import nya.kitsunyan.foxydroid.utility.extension.text.*
@@ -34,6 +36,7 @@ import java.lang.ref.WeakReference
 import java.util.concurrent.TimeUnit
 import kotlin.math.*
 
+@SuppressLint("UnspecifiedImmutableFlag")
 class SyncService: ConnectionService<SyncService.Binder>() {
   companion object {
     private const val ACTION_CANCEL = "${BuildConfig.APPLICATION_ID}.intent.action.CANCEL"
@@ -220,7 +223,7 @@ class SyncService: ConnectionService<SyncService.Binder>() {
     .setColor(ContextThemeWrapper(this, R.style.Theme_Main_Light)
       .getColorFromAttr(android.R.attr.colorAccent).defaultColor)
     .addAction(0, getString(R.string.cancel), PendingIntent.getService(this, 0,
-      Intent(this, this::class.java).setAction(ACTION_CANCEL), PendingIntent.FLAG_UPDATE_CURRENT)) }
+      Intent(this, this::class.java).setAction(ACTION_CANCEL), Utils.getPendingIntentFlag())) }
 
   private fun publishForegroundState(force: Boolean, state: State) {
     if (force || currentTask?.lastState != state) {
@@ -355,7 +358,7 @@ class SyncService: ConnectionService<SyncService.Binder>() {
       .setColor(ContextThemeWrapper(this, R.style.Theme_Main_Light)
         .getColorFromAttr(android.R.attr.colorAccent).defaultColor)
       .setContentIntent(PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java)
-        .setAction(MainActivity.ACTION_UPDATES), PendingIntent.FLAG_UPDATE_CURRENT))
+        .setAction(MainActivity.ACTION_UPDATES), Utils.getPendingIntentFlag()))
       .setStyle(NotificationCompat.InboxStyle().applyHack {
         for (productItem in productItems.take(maxUpdates)) {
           val builder = SpannableStringBuilder(productItem.name)
@@ -376,6 +379,7 @@ class SyncService: ConnectionService<SyncService.Binder>() {
       .build())
   }
 
+  @SuppressLint("SpecifyJobSchedulerIdRange")
   class Job: JobService() {
     private var syncParams: JobParameters? = null
     private var syncDisposable: Disposable? = null

@@ -2,6 +2,7 @@ package nya.kitsunyan.foxydroid.utility
 
 import android.animation.ValueAnimator
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
@@ -211,6 +212,15 @@ object Utils {
     val binder = downloadConnection.binder
     if (pairProductRepository != null && release != null && binder != null) {
       binder.enqueue(packageName, pairProductRepository.first.name, pairProductRepository.second, release)
+    }
+  }
+
+  // fix android 13 crash
+  fun getPendingIntentFlag(): Int {
+    return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+      PendingIntent.FLAG_IMMUTABLE
+    } else {
+      PendingIntent.FLAG_UPDATE_CURRENT
     }
   }
 }

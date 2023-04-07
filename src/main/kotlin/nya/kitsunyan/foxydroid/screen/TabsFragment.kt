@@ -1,6 +1,7 @@
 package nya.kitsunyan.foxydroid.screen
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Canvas
@@ -78,7 +79,7 @@ class TabsFragment: ScreenFragment() {
         layout?.tabs?.let { (0 until it.childCount)
           .forEach { index -> it.getChildAt(index)!!.isEnabled = !value } }
         layout?.sectionIcon?.scaleY = if (value) -1f else 1f
-        if ((sectionsList?.parent as? View)?.height ?: 0 > 0) {
+        if (((sectionsList?.parent as? View)?.height ?: 0) > 0) {
           animateSectionsList()
         }
       }
@@ -215,7 +216,7 @@ class TabsFragment: ScreenFragment() {
       (tab.layoutParams as LinearLayout.LayoutParams).weight = 1f
     }
 
-    showSections = savedInstanceState?.getByte(STATE_SHOW_SECTIONS)?.toInt() ?: 0 != 0
+    showSections = (savedInstanceState?.getByte(STATE_SHOW_SECTIONS)?.toInt() ?: 0) != 0
     sections = savedInstanceState?.getParcelableArrayList<ProductItem.Section>(STATE_SECTIONS).orEmpty()
     section = savedInstanceState?.getParcelable(STATE_SECTION) ?: ProductItem.Section.All
     layout.sectionChange.setOnClickListener { showSections = sections
@@ -414,6 +415,7 @@ class TabsFragment: ScreenFragment() {
     }
   }
 
+  @SuppressLint("NotifyDataSetChanged")
   private fun updateSection() {
     if (section !in sections) {
       section = ProductItem.Section.All

@@ -149,7 +149,7 @@ class EditRepositoryFragment(): ScreenFragment() {
 
       override fun afterTextChanged(s: Editable) {
         val inputString = s.toString()
-        val outputString = inputString.toUpperCase(Locale.US)
+        val outputString = inputString.uppercase(Locale.US)
           .filter(validChar).windowed(2, 2, true).take(32).joinToString(separator = " ")
         if (inputString != outputString) {
           val inputStart = logicalPosition(inputString, Selection.getSelectionStart(s))
@@ -203,7 +203,7 @@ class EditRepositoryFragment(): ScreenFragment() {
             val index = it.indexOf(':')
             if (index >= 0) it.substring(0, index) to it.substring(index + 1) else null
           }
-          ?: null to null
+          ?: (null to null)
         layout.username.setText(usernameText)
         layout.password.setText(passwordText)
       }
