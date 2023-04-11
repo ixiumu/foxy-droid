@@ -52,11 +52,24 @@ android {
     debug {
       minifyEnabled false
       shrinkResources false
+      buildConfigField "String", "REPO_URL", '"https://f-droid.org/repo"'
+      buildConfigField "String", "REPO_ARCHIVE_URL", '"https://f-droid.org/archive"'
     }
+
     release {
       minifyEnabled true
       shrinkResources false
+      buildConfigField "String", "REPO_URL", '"https://cloudflare.f-droid.org/repo"'
+      buildConfigField "String", "REPO_ARCHIVE_URL", '"https://cloudflare.f-droid.org/archive"'
     }
+
+    cnRelease {
+      minifyEnabled true
+      shrinkResources false
+      buildConfigField "String", "REPO_URL", '"https://mirrors.tuna.tsinghua.edu.cn/fdroid/repo"'
+      buildConfigField "String", "REPO_ARCHIVE_URL", '"https://mirrors.tuna.tsinghua.edu.cn/fdroid/archive"'
+    }
+
     all {
       crunchPngs false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.pro'
