@@ -66,8 +66,12 @@ android {
     cnRelease {
       minifyEnabled true
       shrinkResources false
-      buildConfigField "String", "REPO_URL", '"https://mirrors.tuna.tsinghua.edu.cn/fdroid/repo"'
-      buildConfigField "String", "REPO_ARCHIVE_URL", '"https://mirrors.tuna.tsinghua.edu.cn/fdroid/archive"'
+      // tsinghua
+      //buildConfigField "String", "REPO_URL", '"https://mirrors.tuna.tsinghua.edu.cn/fdroid/repo"'
+      //buildConfigField "String", "REPO_ARCHIVE_URL", '"https://mirrors.tuna.tsinghua.edu.cn/fdroid/archive"'
+      // nj
+      buildConfigField "String", "REPO_URL", '"https://mirrors.nju.edu.cn/fdroid/repo"'
+      buildConfigField "String", "REPO_ARCHIVE_URL", '"https://mirrors.nju.edu.cn/fdroid/archive"'
     }
 
     all {
